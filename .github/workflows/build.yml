@@ -20,3 +20,7 @@ jobs:
       - run: cargo clippy
       - run: cargo build --verbose
       - run: cargo test --lib -- --test-threads=1
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4.0.1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
