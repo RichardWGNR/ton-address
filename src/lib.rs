@@ -72,9 +72,9 @@ impl Base64Decoder {
     /// Guesses the Base64 alphabet from the `str` argument.
     #[inline]
     fn guess(str: &str) -> Base64Decoder {
-        if str.contains("+") || str.contains("/") {
+        if str.contains('+') || str.contains('/') {
             return Base64Decoder::Standard;
-        } else if str.contains("-") || str.contains("_") {
+        } else if str.contains('-') || str.contains('_') {
             return Base64Decoder::UrlSafe;
         }
 
@@ -123,8 +123,8 @@ impl Base64Encoder {
         buffer[35] = (crc & 0xFF) as u8;
 
         match self {
-            Self::Standard { .. } => BASE64_STANDARD_NO_PAD.encode(&buffer),
-            Self::UrlSafe { .. } => BASE64_URL_SAFE_NO_PAD.encode(&buffer),
+            Self::Standard { .. } => BASE64_STANDARD_NO_PAD.encode(buffer),
+            Self::UrlSafe { .. } => BASE64_URL_SAFE_NO_PAD.encode(buffer),
         }
     }
 }
@@ -138,7 +138,8 @@ pub struct EncoderResult {
     address: Address,
     non_bounceable: bool,
     non_production: bool,
-    encoder: Base64Decoder,
+    #[allow(dead_code)]
+    decoder: Base64Decoder,
 }
 
 impl EncoderResult {
@@ -211,7 +212,7 @@ impl Address {
     /// Attempt to create an [`Address`] structure from the
     /// string representation of the raw address.
     pub fn from_raw_address(str: &str) -> Result<Self, ParseError> {
-        let parts = str.split(":").collect::<Vec<&str>>();
+        let parts = str.split(':').collect::<Vec<&str>>();
 
         if parts.len() != 2 {
             return Err(ParseError {
@@ -317,14 +318,14 @@ impl Address {
             },
             non_bounceable,
             non_production,
-            encoder,
+            decoder: encoder,
         })
     }
 
     /// Converts the current structure to a string of the form “0:fa16bc...”
     /// also known as the “raw address”.
     pub fn to_raw_address(&self) -> String {
-        format!("{}:{}", self.workchain, hex::encode(&self.hash_part))
+        format!("{}:{}", self.workchain, hex::encode(self.hash_part))
     }
 
     /// Converts the current structure to a Base64 string according to
@@ -340,7 +341,7 @@ impl FromStr for Address {
     type Err = ParseError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        if s.contains(":") {
+        if s.contains(':') {
             Address::from_raw_address(s)
         } else {
             Ok(Address::from_base64(s, None)?.address)
@@ -348,11 +349,11 @@ impl FromStr for Address {
     }
 }
 
-impl<'a> TryFrom<String> for Address {
+impl TryFrom<String> for Address {
     type Error = ParseError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
-        if value.contains(":") {
+        if value.contains(':') {
             Address::from_raw_address(&value)
         } else {
             Ok(Address::from_base64(&value, None)?.address)
@@ -476,7 +477,7 @@ mod tests {
             // Encoder result
             assert_eq!(result.is_bounceable(), true);
             assert_eq!(result.is_production(), true);
-            assert_eq!(result.encoder, Base64Decoder::UrlSafe);
+            assert_eq!(result.decoder, Base64Decoder::UrlSafe);
 
             // Address
             assert_eq!(result.address.get_workchain(), 0);
@@ -498,7 +499,7 @@ mod tests {
             // Encoder result
             assert_eq!(result.is_bounceable(), false);
             assert_eq!(result.is_production(), true);
-            assert_eq!(result.encoder, Base64Decoder::Standard);
+            assert_eq!(result.decoder, Base64Decoder::Standard);
 
             // Address
             assert_eq!(result.address.get_workchain(), 0);
