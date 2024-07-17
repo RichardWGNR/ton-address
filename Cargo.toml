@@ -3,6 +3,7 @@ name = "ton-address"
 version = "0.1.0"
 edition = "2021"
 description = "A simple library for working with addresses on The Open Network (TON)."
+license = "Apache-2.0"
 
 [dependencies]
 base64 = { version = "0.22.1" }
