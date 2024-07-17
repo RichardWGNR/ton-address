@@ -408,7 +408,7 @@ mod tests {
 
             assert_eq!(address, Err(ParseError {
                 address: raw_address.to_owned(),
-                reason: "Invalid hex address string: wrong address format",
+                reason: "Invalid raw address string: wrong address format",
             }));
         }
 
@@ -418,7 +418,7 @@ mod tests {
 
             assert_eq!(address, Err(ParseError {
                 address: raw_address.to_owned(),
-                reason: "Invalid hex address string: workchain number is not a 32-bit integer",
+                reason: "Invalid raw address string: workchain number is not a 32-bit integer",
             }));
         }
 
@@ -428,7 +428,7 @@ mod tests {
 
             assert_eq!(address, Err(ParseError {
                 address: raw_address.to_owned(),
-                reason: "Invalid hex address string: failed to decode hash part",
+                reason: "Invalid raw address string: failed to decode hash part",
             }));
         }
 
@@ -438,7 +438,7 @@ mod tests {
 
             assert_eq!(address, Err(ParseError {
                 address: raw_address.to_owned(),
-                reason: "Invalid hex address string: hash part length must be 32 bytes",
+                reason: "Invalid raw address string: hash part length must be 32 bytes",
             }));
         }
     }
