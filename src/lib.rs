@@ -1,9 +1,9 @@
 #![forbid(unsafe_code)]
 
-use std::fmt::{Display, Formatter};
 use base64::prelude::{BASE64_STANDARD_NO_PAD, BASE64_URL_SAFE_NO_PAD};
 use base64::Engine;
 use crc::Crc;
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 pub type Workchain = i32;
