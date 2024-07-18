@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+use std::fmt::{Display, Formatter};
 use base64::prelude::{BASE64_STANDARD_NO_PAD, BASE64_URL_SAFE_NO_PAD};
 use base64::Engine;
 use crc::Crc;
@@ -361,6 +362,12 @@ impl TryFrom<String> for Address {
     }
 }
 
+impl Display for Address {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.to_base64(BASE64_URL_DEFAULT).as_str())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -617,6 +624,10 @@ mod tests {
                 addr.to_base64(BASE64_URL_DEFAULT),
                 "EQAOl3l3CEEcKaPLHz-BDvT4P0HZkIOPf5POcILE_5qgJuR2"
             );
+            assert_eq!(
+                addr.to_string(),
+                "EQAOl3l3CEEcKaPLHz-BDvT4P0HZkIOPf5POcILE_5qgJuR2"
+            );
         }
 
         // case (2): from base64 url std
@@ -637,6 +648,10 @@ mod tests {
                 addr.to_base64(BASE64_URL_DEFAULT),
                 "EQAOl3l3CEEcKaPLHz-BDvT4P0HZkIOPf5POcILE_5qgJuR2"
             );
+            assert_eq!(
+                addr.to_string(),
+                "EQAOl3l3CEEcKaPLHz-BDvT4P0HZkIOPf5POcILE_5qgJuR2"
+            );
         }
 
         // case (2): from raw address
@@ -655,6 +670,10 @@ mod tests {
             );
             assert_eq!(
                 addr.to_base64(BASE64_URL_DEFAULT),
+                "EQAOl3l3CEEcKaPLHz-BDvT4P0HZkIOPf5POcILE_5qgJuR2"
+            );
+            assert_eq!(
+                addr.to_string(),
                 "EQAOl3l3CEEcKaPLHz-BDvT4P0HZkIOPf5POcILE_5qgJuR2"
             );
         }
