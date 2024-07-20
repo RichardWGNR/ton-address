@@ -136,11 +136,11 @@ impl Base64Encoder {
 #[derive(Debug)]
 pub struct EncoderResult {
     // TODO : eq
-    address: Address,
-    non_bounceable: bool,
-    non_production: bool,
+    pub address: Address,
+    pub non_bounceable: bool,
+    pub non_production: bool,
     #[allow(dead_code)]
-    decoder: Base64Decoder,
+    pub decoder: Base64Decoder,
 }
 
 impl EncoderResult {
