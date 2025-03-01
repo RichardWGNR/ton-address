@@ -11,18 +11,15 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
       - name: "Nightly toolchain for tests"
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
-          override: true
-          components: rustfmt, clippy
+          components: rustfmt, clippy, rust-src, cargo-tarpaulin
 
       - name: "Check fmt"
         run: cargo fmt --check
@@ -33,17 +30,10 @@ jobs:
       - name: "Build"
         run: cargo build --verbose
 
-      - name: "Run tests"
-        run: cargo test --verbose --lib -- --test-threads=1
-        env:
-          CARGO_INCREMENTAL: "0"
-          RUSTFLAGS: "-Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort"
-          RUSTDOCFLAGS: "-Cpanic=abort"
-
-      - name: rust-grcov
-        uses: actions-rs/grcov@v0.1
+      - name: "Run tests & generate code coverage"
+        run: cargo tarpaulin --verbose --all-features --out xml
 
       - name: Codecov
-        uses: codecov/codecov-action@v4.0.1
+        uses: codecov/codecov-action@v5.4.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
