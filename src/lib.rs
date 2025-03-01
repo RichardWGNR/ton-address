@@ -55,7 +55,7 @@ pub enum Base64Decoder {
 impl Base64Decoder {
     /// Decodes a Base64 encoded string depending on the selected algorithm.
     #[inline]
-    fn decode<'b: 'a, 'a>(&'a self, str: &'b str) -> Result<Vec<u8>, ParseError> {
+    fn decode(&self, str: &str) -> Result<Vec<u8>, ParseError> {
         let res = match self {
             Self::Standard => BASE64_STANDARD_NO_PAD.decode(str),
             Self::UrlSafe => BASE64_URL_SAFE_NO_PAD.decode(str),
@@ -135,7 +135,6 @@ impl Base64Encoder {
 /// the [`Address`] structure.
 #[derive(Debug)]
 pub struct EncoderResult {
-    // TODO : eq
     pub address: Address,
     pub non_bounceable: bool,
     pub non_production: bool,
@@ -177,7 +176,6 @@ impl PartialEq for EncoderResult {
 /// always remain the same.
 #[derive(Debug, PartialEq)]
 pub struct Address {
-    // TODO : eq
     workchain: Workchain,
     hash_part: HashPart,
 }
@@ -212,12 +210,17 @@ impl Address {
 
     /// Attempt to create an [`Address`] structure from the
     /// string representation of the raw address.
-    pub fn from_raw_address(str: &str) -> Result<Self, ParseError> {
-        let parts = str.split(':').collect::<Vec<&str>>();
+    pub fn from_raw_address<S>(raw: S) -> Result<Self, ParseError>
+    where
+        S: AsRef<str>,
+    {
+        let raw = raw.as_ref();
+
+        let parts = raw.split(':').collect::<Vec<&str>>();
 
         if parts.len() != 2 {
             return Err(ParseError {
-                address: str.to_owned(),
+                address: raw.to_owned(),
                 reason: "Invalid raw address string: wrong address format",
             });
         }
@@ -226,7 +229,7 @@ impl Address {
             Ok(wc) => wc,
             Err(_) => {
                 return Err(ParseError {
-                    address: str.to_owned(),
+                    address: raw.to_owned(),
                     reason: "Invalid raw address string: workchain number is not a 32-bit integer",
                 });
             }
@@ -236,7 +239,7 @@ impl Address {
             Ok(part) => part,
             Err(_) => {
                 return Err(ParseError {
-                    address: str.to_owned(),
+                    address: raw.to_owned(),
                     reason: "Invalid raw address string: failed to decode hash part",
                 });
             }
@@ -244,7 +247,7 @@ impl Address {
 
         if hash_part.len() != 32 {
             return Err(ParseError {
-                address: str.to_owned(),
+                address: raw.to_owned(),
                 reason: "Invalid raw address string: hash part length must be 32 bytes",
             });
         }
@@ -263,10 +266,15 @@ impl Address {
     /// according to the specified algorithm.
     /// Otherwise, the address algorithm will be guessed by the presence of base64 control
     /// characters.
-    pub fn from_base64(
-        address: &str,
+    pub fn from_base64<S>(
+        address: S,
         encoder: Option<Base64Decoder>,
-    ) -> Result<EncoderResult, ParseError> {
+    ) -> Result<EncoderResult, ParseError>
+    where
+        S: AsRef<str>,
+    {
+        let address = address.as_ref();
+
         if address.len() != 48 {
             return Err(ParseError {
                 address: address.to_owned(),
