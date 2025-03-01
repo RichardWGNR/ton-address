@@ -193,7 +193,7 @@ impl Address {
 
     /// Creates a new [`Address`] structure using the null values of workchain
     /// and hash_part.
-    pub fn empty() -> Self {
+    pub const fn empty() -> Self {
         Self {
             workchain: 0,
             hash_part: [0u8; 32],
