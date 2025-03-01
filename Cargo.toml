@@ -9,5 +9,5 @@ repository = "https://github.com/RichardWGNR/ton-address"
 [dependencies]
 base64 = { version = "0.22.1" }
 crc = { version = "3.2.1" }
-thiserror = { version = "1.0.62" }
+thiserror = { version = "2.0.11" }
 hex = { version = "0.4.3" }
